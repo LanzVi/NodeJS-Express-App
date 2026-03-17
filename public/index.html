@@ -7,7 +7,46 @@
 </head>
 <body>
     <h1>Welcome to the Static File</h1>
-    <p>This is a simple static HTML file served by Express.</p><!--this just popped up-->
-    
+    <form id="item-form">
+        <input type="text" id="item-input" placeholder="Add an item" required>
+        <button type="submit">Add</button>
+    </form>
+    <ul id="item-list"></ul>
+    <script>
+        const form = document.getElementById('item-form');
+        const input = document.getElementById('item-input');
+        const list = document.getElementById('item-list');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const item = input.value.trim();
+            if (item) {
+                try {
+                    const response = await fetch('/items', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'},
+                        body: JSON.stringify({ item })
+                    });
+                    input.value = '';
+                    loadItems();
+                    }
+                    catch (error) {
+                    console.error('Error:', error);}
+                    }
+            });
+
+        async function loadItems() {
+            try {
+                const response = await fetch('/items');
+                const items = await response.json();
+                list.innerHTML = items.map(item => `<li>${item}</li>`).join('');    
+                } catch (error) {
+                console.error('Error:', error);
+                }
+        }
+        loadItems();
+    </script>
+
 </body>
 </html>
